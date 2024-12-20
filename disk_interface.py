@@ -37,6 +37,8 @@ class DiskInterface:
                     file_path = os.path.join(root, file)
                     self._overwrite_and_delete(file_path)
                 for dir_ in dirs:
+                    if len(root) == 3 and dir_ == 'System Volume Information':
+                        continue
                     dir_path = os.path.join(root, dir_)
                     os.rmdir(dir_path)
 
@@ -75,8 +77,6 @@ class DiskInterface:
         try:
             for root, _, files in os.walk(self.disk_path):
                 for file in files:
-                    if not (file.startswith('block_') or file == 'meta'):
-                        continue
                     file_path = os.path.join(root, file)
                     relative_path = os.path.relpath(file_path, self.disk_path)
                     try:
@@ -108,6 +108,25 @@ class DiskInterface:
             logger.info(f'Запись файлов на диск {self.disk_letter} завершена.')
         except Exception as e:
             logger.error(f'Ошибка при записи файлов: {str(e)}')
+            raise
+    
+    def list_root_files(self) -> list:
+        """
+        Возвращает список файлов в корневом каталоге диска
+
+        :return: Список файлов в корневом каталоге
+        :rtype: list
+        """
+        logger.info(f'Получение списка файлов в корне диска {self.disk_letter}...')
+        try:
+            root_files = [
+                file for file in os.listdir(self.disk_path)
+                if os.path.isfile(os.path.join(self.disk_path, file))
+            ]
+            logger.info(f'Файлы в корне диска {self.disk_letter}: {root_files}')
+            return root_files
+        except Exception as e:
+            logger.error(f'Ошибка при получении списка файлов: {str(e)}')
             raise
 
 if __name__ == '__main__':

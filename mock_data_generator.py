@@ -35,4 +35,5 @@ def generate_mock_tree(base_path, depth=3, max_dirs=5, max_files=10, file_size_r
 if __name__ == '__main__':
     root = 'E:'
     os.makedirs(root, exist_ok=True)
-    generate_mock_tree(root)
+    for i in range(10):
+        generate_mock_tree(root)
